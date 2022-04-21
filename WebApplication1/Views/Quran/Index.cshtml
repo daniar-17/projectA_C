@@ -1,0 +1,75 @@
+﻿@using WebApplication1.Models;
+@{
+    List<QuranModel> results = (List<QuranModel>)ViewData["ListSurat"] != null ?
+        (List<QuranModel>)ViewData["ListSurat"] : new List<QuranModel>();
+    ViewBag.Title = "Index";
+}
+<div class="card card-outline card-success">
+    <div class="card-body">
+        <div class="row p-1">
+            <div class="input-group mb-3">
+                <select id="surat" class="form-control select2">
+                    <option value="" disabled selected hidden>Cari Nama Surat...</option>
+                    @foreach (QuranModel item in results)
+                    {
+                        <option value="@item.Nomor">@item.Nomor. @item.NamaLatin</option>
+                    }
+                </select>
+                <span class="input-group-append">
+                    <button id="btnSearch" type="button" class="btn btn-success" onclick="SearchData()"><i class="fas fa-search"></i> Search</button>
+                </span>
+                <p class="text-danger" id="infoMessage"></p>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    @foreach (QuranModel item in results)
+    {
+        <div class="col-4 mb-1" title="@item.NamaLatin | @item.Arti">
+            <a href=@Url.Content("~/Quran/Detail/"+item.Nomor) class="text-secondary">
+                <div class="small-box p-3" style="background-color: #eeeee4;">
+                    <div class="inner">
+                        <h5 class="text-secondary">@item.Nomor. @item.NamaLatin</h5>
+                        <p>@item.Arti</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion text-success"><h3>@item.Nama</h3></i>
+                    </div>
+                    @*<a href="#" class="small-box-footer text-secondary">Details <i class="fas fa-arrow-circle-right"></i></a>*@
+                </div>
+            </a>
+        </div>
+    }
+</div>
+
+
+@section JScript{
+    <script type="text/javascript">
+        $(function () {
+            $('.select2').select2()
+
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+        });
+
+        function SearchData() {
+            $("#surat").removeClass("is-invalid");
+            $("#infoMessage").text("");
+            var nomor = $("#surat option:selected").val();
+            if (nomor == null || nomor == "") {
+                $("#surat").addClass("is-invalid");
+                $("#infoMessage").text("Silahkan Pilih Surat . . !");
+                return false;
+            }
+            if (surat != null || surat != "") {
+                $("#loadinggif").show();
+                window.location.href = "/Quran/Detail/" + nomor;
+            }
+        }
+    </script>
+}

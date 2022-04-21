@@ -1,0 +1,95 @@
+﻿@using WebApplication1.Models;
+@{
+    QuranModel results = (QuranModel)ViewData["ListSuratDetail"] != null ?
+        (QuranModel)ViewData["ListSuratDetail"] : new QuranModel();
+    ViewBag.Title = "Detail";
+}
+
+<div class="card">
+    <div class="card-header">
+        <button id="back" class="btn btn-sm bg-gradient-secondary"><i class="fas fa-arrow-alt-circle-left"></i> Back</button>
+    </div>
+    <div class="card-body m-2">
+        <div>
+            <h4 class="myfont"><i class="fas fa-check-circle text-success"></i> @results.NamaLatin - @results.Nama</h4>
+        </div>
+        <div>
+            <h6 class="fontNama">Jumlah Ayat: @results.JumlahAyat / Arti: @results.Arti</h6>
+        </div>
+        <div class="text-right">
+            <a href=@Url.Content("~/Quran/DetailTafsir/"+results.Nomor) class="btn bg-gradient-info mr-2"><i class="fas fa-file-alt"></i> Lihat Tafsir</a>
+            <button id="btnplay" class="btn bg-gradient-primary" value="0"><i class="fas fa-play-circle"></i> Play Audio</button>
+        </div>
+        <audio controls hidden class="audioComponent">
+            <source src="@results.Audio" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+</div>
+
+@foreach (QuranModelAyat item in results.Ayat)
+{
+    <div class="callout callout-success">
+        <h6 class="btn btn-success btn-sm">@item.Nomor</h6>
+        <div class="myfont text-right p-2 mb-2">
+            <h3 class="mb-2" style="line-height:2.4;">
+                @item.BahasaArab&nbsp; (@string.Format("{0}", item.Nomor.Replace('1', '\u06f1')
+                                                                    .Replace('2', '\u06f2')
+                                                                    .Replace('3', '\u06f3')
+                                                                    .Replace('4', '\u06f4')
+                                                                    .Replace('5', '\u06f5')
+                                                                    .Replace('6', '\u06f6')
+                                                                    .Replace('7', '\u06f7')
+                                                                    .Replace('8', '\u06f8')
+                                                                    .Replace('9', '\u06f9')))
+            </h3>
+        </div>
+        <div>
+            <h6 class="text-secondary text-justify mb-3">
+                @Html.Raw(item.Terjemahan)
+            </h6>
+        </div>
+        <div>
+            <h6 class="text-justify">
+                Artinya : @item.Artinya
+            </h6>
+        </div>
+    </div>
+}
+
+@section JScript{
+    <script type="text/javascript">
+        $(function () {
+            $('.select2').select2()
+
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+        });
+
+        $("#btnplay").click(function () {
+            var check = $(this).val();
+            if (check == 0 || check == "0") {
+                $(this).text("");
+                $(".audioComponent")[0].play();
+                $(this).removeClass("bg-gradient-primary");
+                $(this).addClass("bg-gradient-danger");
+                $(this).append('<i class="fa fa-stop-circle"></i> Stop Audio');
+                $(this).val(1);
+            } else {
+                $(this).text("");
+                $(".audioComponent")[0].pause();
+                $(this).removeClass("bg-gradient-danger");
+                $(this).addClass("bg-gradient-primary");
+                $(this).append('<i class="fa fa-play-circle"></i> Play Audio');
+                $(this).val(0);
+            }
+        });
+
+        $("#back").click(function () {
+            $("#loadinggif").show();
+            window.location.href = "/Quran";
+        });
+    </script>
+}
